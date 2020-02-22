@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3"></script>
+    <!-- Import vega-embed -->
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4"></script>
+</head>
+
+
+<body>
+    <!-- Note the usage of `type=module` here as this is an ES6 module -->
+    <div id="viz"></div>
+    <script type="module">
+        // Use ES module import syntax to import functionality from the module
+        // that we have compiled.
+        //
+        // Note that the `default` import is an initialization function which
+        // will "boot" the module and make it ready to use. Currently browsers
+        // don't support natively imported WebAssembly as an ES module, but
+        // eventually the manual initialization won't be required!
+        import init, { call_vega } from './pkg/vega_embed_shim.js';
+        init().then(()=> {
+            call_vega();
+        })
+    </script>
+</body>
+
+</html>
