@@ -8,7 +8,7 @@ pub fn call_vega() {
     let target = doc.get_element_by_id("viz").unwrap();
 
     if let Ok(chart) = gen_chart() {
-        let mut option = HashMap::<&str, &str>::new();
+        let mut option = HashMap::<String, String>::new();
         option.insert("renderer", "svg");
         render_chart(&chart, target, &Some(option));
     }

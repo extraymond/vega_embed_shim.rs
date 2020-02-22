@@ -23,7 +23,7 @@ extern "C" {
 pub fn render_chart(
     chart: &Vegalite,
     target: web_sys::Element,
-    option: &Option<HashMap<&str, &str>>,
+    option: &Option<HashMap<String, String>>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let spec = JsValue::from_serde(chart)?;
     log::info!("chart ready");
