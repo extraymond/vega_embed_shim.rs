@@ -26,7 +26,6 @@ pub fn render_chart(
     option: &Option<HashMap<String, String>>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let spec = JsValue::from_serde(chart)?;
-    log::info!("chart ready");
     let opt = match &option {
         Some(x) => JsValue::from_serde(x)?,
         None => JsValue::from(js_sys::Object::new()),
