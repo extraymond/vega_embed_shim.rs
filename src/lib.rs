@@ -1,12 +1,22 @@
 mod utils;
 use anyhow::Result;
+use futures_timer::Delay;
 use std::collections::HashMap;
+use std::time::Duration;
 use vega_lite_3::*;
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::{prelude::*, JsCast};
 use wasm_bindgen_futures::*;
 
 #[cfg(feature = "example")]
-use example;
+mod example;
+#[cfg(feature = "example")]
+use example::call_vega;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &JsValue);
+}
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -24,6 +34,7 @@ pub fn render_chart(
     chart: &Vegalite,
     target: web_sys::Element,
     option: &Option<HashMap<String, String>>,
+    watch_resize: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let spec = JsValue::from_serde(chart)?;
     let opt = match &option {
@@ -31,9 +42,35 @@ pub fn render_chart(
         None => JsValue::from(js_sys::Object::new()),
     };
     let fut: JsFuture = vegaEmbed(target, spec, opt).into();
-    spawn_local(async move {
-        fut.await.unwrap();
-    });
+
+    if let Some(id) = watch_resize {
+        let doc = web_sys::window().unwrap().document().unwrap();
+        let target: web_sys::HtmlElement = doc.get_element_by_id(id).unwrap().unchecked_into();
+        spawn_local(async move {
+            let res = fut.await.unwrap();
+            let view = js_sys::Reflect::get(&res, &JsValue::from_str("view")).unwrap();
+            let mut dimension = [0_i32; 2];
+            let width = js_sys::Function::from(
+                js_sys::Reflect::get(&view, &JsValue::from_str("width")).unwrap(),
+            );
+            let height = js_sys::Function::from(
+                js_sys::Reflect::get(&view, &JsValue::from_str("height")).unwrap(),
+            );
+            let run = js_sys::Function::from(
+                js_sys::Reflect::get(&view, &JsValue::from_str("run")).unwrap(),
+            );
+            loop {
+                Delay::new(Duration::from_millis(100)).await;
+                let new_dimension = [target.offset_width(), target.offset_height()];
+                if (dimension != new_dimension) && new_dimension != [0, 0] {
+                    dimension = new_dimension;
+                    width.call1(&view, &JsValue::from(dimension[0])).unwrap();
+                    height.call1(&view, &JsValue::from(dimension[1])).unwrap();
+                    run.call0(&view).unwrap();
+                }
+            }
+        });
+    }
 
     Ok(())
 }

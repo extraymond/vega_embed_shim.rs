@@ -1,3 +1,5 @@
+use crate::render_chart;
+use std::collections::HashMap;
 use vega_lite_3::*;
 use wasm_bindgen::prelude::*;
 
@@ -9,8 +11,8 @@ pub fn call_vega() {
 
     if let Ok(chart) = gen_chart() {
         let mut option = HashMap::<String, String>::new();
-        option.insert("renderer", "svg");
-        render_chart(&chart, target, &Some(option));
+        option.insert("renderer".to_string(), "svg".to_string());
+        render_chart(&chart, target, &Some(option), Some("container"));
     }
 }
 
