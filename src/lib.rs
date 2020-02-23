@@ -34,7 +34,7 @@ pub fn render_chart(
     chart: &Vegalite,
     target: web_sys::Element,
     option: &Option<HashMap<String, String>>,
-    watch_resize: Option<&str>,
+    watch_resize: Option<web_sys::Element>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let spec = JsValue::from_serde(chart)?;
     let opt = match &option {
@@ -43,9 +43,8 @@ pub fn render_chart(
     };
     let fut: JsFuture = vegaEmbed(target, spec, opt).into();
 
-    if let Some(id) = watch_resize {
-        let doc = web_sys::window().unwrap().document().unwrap();
-        let target: web_sys::HtmlElement = doc.get_element_by_id(id).unwrap().unchecked_into();
+    if let Some(target) = watch_resize {
+        let target: web_sys::HtmlElement = target.unchecked_into();
         spawn_local(async move {
             let res = fut.await.unwrap();
             let view = js_sys::Reflect::get(&res, &JsValue::from_str("view")).unwrap();
