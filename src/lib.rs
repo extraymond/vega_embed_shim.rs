@@ -29,7 +29,7 @@ extern "C" {
     fn vegaEmbed(target: web_sys::Element, spec: JsValue, option: JsValue) -> js_sys::Promise;
 }
 
-/// Render chart onto the web_sys::Element, with optional dict.
+/// Render chart onto the web_sys::Element, with optional dict, allow resize if a container web_sys::Element is provided.
 pub fn render_chart(
     chart: &Vegalite,
     target: web_sys::Element,

@@ -12,7 +12,12 @@ pub fn call_vega() {
     if let Ok(chart) = gen_chart() {
         let mut option = HashMap::<String, String>::new();
         option.insert("renderer".to_string(), "svg".to_string());
-        render_chart(&chart, target, &Some(option), Some("container"));
+        let doc = web_sys::window()
+            .map(|win| win.document())
+            .flatten()
+            .unwrap();
+        let container = doc.get_element_by_id("container").unwrap();
+        render_chart(&chart, target, &Some(option), Some(container)).expect("to render it");
     }
 }
 
