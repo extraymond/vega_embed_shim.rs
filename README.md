@@ -20,4 +20,4 @@ Run the example:
 2. use wasm-pack to build the package: ```wasm-pack build -t web -d public/pkg -- --all-features```. For simplicity purpose, it's using the web target so no bundler is involved.
 3. Start a webserver of your choice on the public folder, ```serve public```
 
-[rust wasm frontend demo](https://www.dropbox.com/s/7gnbjr3sgwcobls/2020-02-25%2004-51-38.mp4?dl=0)
+[rust wasm frontend demo](https://imgur.com/vPKXTiB)
